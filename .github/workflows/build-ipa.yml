@@ -1,7 +1,7 @@
 
 name: Build Mush8 IPA
 
-'on':
+on:
   workflow_dispatch:
 
 permissions:
