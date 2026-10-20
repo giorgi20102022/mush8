@@ -1,0 +1,52 @@
+
+name: Build Mush8 IPA
+
+'on':
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-26
+    timeout-minutes: 360
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check Xcode
+        run: xcodebuild -version
+
+      - name: Check required game files
+        run: |
+          if [ ! -f base.nsp ] || [ ! -f upd4-0-1.nsp ]; then
+            echo "::error::Missing base.nsp or upd4-0-1.nsp. Provide your own legally dumped game files securely."
+            exit 1
+          fi
+
+      - name: Set up stable Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Install required Rust toolchain
+        run: |
+          rustup toolchain install 1.98.1
+          rustup target add aarch64-apple-ios --toolchain 1.98.1
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Build IPA
+        run: ./make-ios.sh --ipa
+
+      - name: Upload IPA
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Mush8-IPA
+          path: build/Mush8.ipa
+          if-no-files-found: error
