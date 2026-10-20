@@ -1,7 +1,7 @@
 
 name: Build Mush8 IPA
 
-on:
+'on':
   workflow_dispatch:
 
 permissions:
@@ -14,10 +14,8 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Select Xcode
-        run: |
-          xcodebuild -version
-          xcode-select -p
+      - name: Check Xcode
+        run: xcodebuild -version
 
       - name: Install Rust
         run: |
@@ -37,4 +35,3 @@ jobs:
           name: Mush8-IPA
           path: build/Mush8.ipa
           if-no-files-found: error
-
